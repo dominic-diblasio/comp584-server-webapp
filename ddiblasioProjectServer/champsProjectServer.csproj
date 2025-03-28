@@ -21,4 +21,8 @@
     <ProjectReference Include="..\ddiblasioModel\champsModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>
