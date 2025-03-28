@@ -1,0 +1,6 @@
+@ddiblasioProjectServer_HostAddress = http://localhost:5286
+
+GET {{ddiblasioProjectServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
