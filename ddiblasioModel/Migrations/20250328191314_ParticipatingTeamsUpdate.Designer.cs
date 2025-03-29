@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using champsModel;
 
@@ -11,9 +12,11 @@ using champsModel;
 namespace champsModel.Migrations
 {
     [DbContext(typeof(ChampsDBContext))]
-    partial class ChampsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250328191314_ParticipatingTeamsUpdate")]
+    partial class ParticipatingTeamsUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

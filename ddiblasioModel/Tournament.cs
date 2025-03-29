@@ -17,6 +17,8 @@ public partial class Tournament
     [Unicode(false)]
     public string Name { get; set; } = null!;
 
+    public int ParticipatingTeams {  get; set; }
+
     public int MaxTeams { get; set; }
 
     [Column("GameID")]

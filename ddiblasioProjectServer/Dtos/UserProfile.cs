@@ -9,7 +9,11 @@ namespace champsProjectServer.Dtos
     {
         public int Id { get; set; }
         public string Username { get; set; } = null!;
-        public string Name { get; set; }
-        public string Region { get; set; }
+        public string Name { get; set; } = null!;
+        public string Region { get; set; } = null!;
+        public int MatchPlays { get; set; }
+        public int MatchWins { get; set; }
+        public int TournamentPlays { get; set; }
+        public int TournamentWins { get; set; }
     }
 }

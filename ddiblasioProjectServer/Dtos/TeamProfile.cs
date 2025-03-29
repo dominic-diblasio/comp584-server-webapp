@@ -8,8 +8,10 @@ namespace champsProjectServer.Dtos
     public class TeamProfile
     {
         public int Id { get; set; }
-        public string Username { get; set; } = null!;
-        public string Name { get; set; }
-        public string Region { get; set; }
+        public string Name { get; set; } = null!;
+        public string Region { get; set; } = null!;
+        public int MaxMembers { get; set; }
+        public int TournamentsEntered { get; set; }
+        public int TournamentWins { get; set; }
     }
 }
