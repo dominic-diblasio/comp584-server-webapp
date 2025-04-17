@@ -1,0 +1,1 @@
+Due to an error with my DBContext, I had to revert the previous migrations into one large migration. This is to act as a proof for my updates at each stage of development
