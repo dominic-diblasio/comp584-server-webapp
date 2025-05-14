@@ -21,9 +21,9 @@ namespace champsProjectServer.Controllers
     public class SeedController(ChampsDBContext context, IHostEnvironment environment,
         UserManager<ChampsUser> userManager) : ControllerBase
     {
-        string _pathName = Path.Combine(environment.ContentRootPath, "Data/champs.csv");
+        //string _pathName = Path.Combine(environment.ContentRootPath, "Data/champs.csv");
 
-        [HttpPost("Users")]
+        [HttpPost("ChampsUsers")]
         public async Task ImportUsersAsync()
         {
             ChampsUser user = new()

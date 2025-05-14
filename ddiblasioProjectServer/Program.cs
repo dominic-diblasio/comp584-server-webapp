@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -12,10 +13,52 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Swagger gen with custom authentication configuration
+// (This allows for us to host on 
+builder.Services.AddSwaggerGen(c => {
+    c.SwaggerDoc("v1", new()
+    {
+        Contact = new()
+        {
+            // General credential information
+            Email = "dominic@csun.edu",
+            Name = "Dominic",
+            // Updated to be for the current semester's course - Spring 2025 COMP 584!
+            Url = new("https://canvas.csun.edu/courses/162764")
+        },
+        Description = "APIs for Champs",
+        Title = "Champs Website APIs",
+        Version = "V1"
+    });
+    OpenApiSecurityScheme jwtSecurityScheme = new()
+    {
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Name = "JWT Authentication",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Description = "Please enter *only* JWT token",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, jwtSecurityScheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, [] }
+    });
+});
+
 builder.Services.AddDbContext<ChampsDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+// Inject identity with the FrameworkStore of the DBContext file (role is ChampsUser)
+builder.Services.AddIdentity<ChampsUser, IdentityRole>()
+    .AddEntityFrameworkStores<ChampsDBContext>();
 
 // Adding authentication tabs for our framework using JwtBearer Defaults
 builder.Services.AddAuthentication(options =>
@@ -41,9 +84,6 @@ builder.Services.AddAuthentication(options =>
         ?? throw new InvalidOperationException()
     };
 });
-
-builder.Services.AddIdentity<ChampsUser, IdentityRole>()
-    .AddEntityFrameworkStores<ChampsDBContext>();
 
 // Inject our dependencies into the builder to ensure JWT can be handled
 builder.Services.AddScoped<JwtHandler>();

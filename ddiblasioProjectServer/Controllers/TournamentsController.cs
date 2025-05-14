@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using champsModel;
 
+
+// Tournaments is designed to be open-visual, so you shouldn't have to log in to se4e these routes be displayed
+
 namespace champsProjectServer.Controllers
 {
     [Route("api/[controller]")]
