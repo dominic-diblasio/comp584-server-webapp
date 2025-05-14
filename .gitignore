@@ -396,3 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+ddiblasioModel/appsettings.json
+ddiblasioProjectServer/appsettings.json
+ddiblasioProjectServer/appsettings.Development.json
