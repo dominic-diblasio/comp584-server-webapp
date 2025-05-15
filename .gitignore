@@ -399,3 +399,5 @@ FodyWeavers.xsd
 ddiblasioModel/appsettings.json
 ddiblasioProjectServer/appsettings.json
 ddiblasioProjectServer/appsettings.Development.json
+ddiblasioProjectServer/appsettings.Production.json
+ddiblasioModel/modelsettings.json
