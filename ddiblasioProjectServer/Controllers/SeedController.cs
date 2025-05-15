@@ -45,42 +45,51 @@ namespace champsProjectServer.Controllers
         [HttpPost("Games")]
         public async Task<ActionResult> ImportGamesAsync()
         {
-            Dictionary<string, Game> itemsByName = context.Games
-                .AsNoTracking().ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-
-            CsvConfiguration config = new(CultureInfo.InvariantCulture)
+            try
             {
-                HasHeaderRecord = true,
-                HeaderValidated = null
-            };
+                Dictionary<string, Game> itemsByName = context.Games
+                    .AsNoTracking().ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 
-            // Update to corresponding _pathName!
-            using StreamReader reader = new(_game_pathName);
-            using CsvReader csv = new(reader, config);
-
-            List<GamesDTO> records = csv.GetRecords<GamesDTO>().ToList();
-            foreach (GamesDTO record in records)
-            {
-                // Make sure no duplicates of names
-                if (itemsByName.ContainsKey(record.name))
+                CsvConfiguration config = new(CultureInfo.InvariantCulture)
                 {
-                    continue;
+                    HasHeaderRecord = true,
+                    HeaderValidated = null
+                };
+
+                // Update to corresponding _pathName!
+                using StreamReader reader = new(_game_pathName);
+                using CsvReader csv = new(reader, config);
+
+                List<GamesDTO> records = csv.GetRecords<GamesDTO>().ToList();
+                foreach (GamesDTO record in records)
+                {
+                    // Make sure no duplicates of names
+                    if (itemsByName.ContainsKey(record.name))
+                    {
+                        continue;
+                    }
+
+                    // Add items here (See Corresponding stores item for reference
+                    Game newItem = new()
+                    {
+                        Name = record.name,
+                        Genre = record.genre,
+                        TeamSize = record.teamsize
+                    };
+                    await context.Games.AddAsync(newItem);
+                    itemsByName.Add(record.name, newItem);
                 }
 
-                // Add items here (See Corresponding stores item for reference
-                Game newItem = new()
-                {
-                    Name = record.name,
-                    Genre = record.genre,
-                    TeamSize = record.teamsize
-                };
-                await context.Games.AddAsync(newItem);
-                itemsByName.Add(record.name, newItem);
+                await context.SaveChangesAsync();
+
+                return new JsonResult(itemsByName.Count);
+
             }
-
-            await context.SaveChangesAsync();
-
-            return new JsonResult(itemsByName.Count);
+            catch (Exception ex)
+            {
+                // Return the error to the client (or log it)
+                return StatusCode(500, new { message = ex.Message, stackTrace = ex.StackTrace });
+            }
         }
 
         [HttpPost("PlayerUsers")]
@@ -173,7 +182,7 @@ namespace champsProjectServer.Controllers
             return new JsonResult(itemsByName.Count);
         }
 
-        [HttpPost("Tournament")]
+        [HttpPost("Tournaments")]
         public async Task<ActionResult> ImportTournamentsAsync()
         {
             Dictionary<string, Tournament> itemsByName = context.Tournaments
