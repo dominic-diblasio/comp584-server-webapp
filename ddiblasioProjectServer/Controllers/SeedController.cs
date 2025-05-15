@@ -96,7 +96,7 @@ namespace champsProjectServer.Controllers
         public async Task<ActionResult> ImportPlayerUsersAsync()
         {
             Dictionary<string, User> itemsByName = context.Users
-                .AsNoTracking().ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+                .AsNoTracking().ToDictionary(x => x.Username, StringComparer.OrdinalIgnoreCase);
 
             CsvConfiguration config = new(CultureInfo.InvariantCulture)
             {
@@ -112,7 +112,8 @@ namespace champsProjectServer.Controllers
             foreach (UsersDTO record in records)
             {
                 // Make sure no duplicates of names
-                if (itemsByName.ContainsKey(record.name))
+                // This one specifically uses username
+                if (itemsByName.ContainsKey(record.username))
                 {
                     continue;
                 }
@@ -131,12 +132,54 @@ namespace champsProjectServer.Controllers
                     TournamentWins = record.tournamentwins
                 };
                 await context.Users.AddAsync(newItem);
-                itemsByName.Add(record.name, newItem);
+                itemsByName.Add(record.username, newItem);
             }
 
             await context.SaveChangesAsync();
 
             return new JsonResult(itemsByName.Count);
+        }
+
+        [HttpPost("DeletePlayerUsers")]
+        public async Task<ActionResult> DeletePlayerUsersAsync()
+        {
+            try
+            {
+                // Load existing users into a dictionary for fast lookup
+                Dictionary<string, User> itemsByUsername = context.Users
+                    .ToDictionary(x => x.Username, StringComparer.OrdinalIgnoreCase);
+
+                CsvConfiguration config = new(CultureInfo.InvariantCulture)
+                {
+                    HasHeaderRecord = true,
+                    HeaderValidated = null
+                };
+
+                using StreamReader reader = new(_users_pathName);
+                using CsvReader csv = new(reader, config);
+
+                List<UsersDTO> records = csv.GetRecords<UsersDTO>().ToList();
+
+                int deleteCount = 0;
+
+                foreach (UsersDTO record in records)
+                {
+                    // Check if the user exists in DB
+                    if (itemsByUsername.TryGetValue(record.username, out var existingUser))
+                    {
+                        context.Users.Remove(existingUser);
+                        deleteCount++;
+                    }
+                }
+
+                await context.SaveChangesAsync();
+
+                return new JsonResult(new { deleted = deleteCount });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message, stackTrace = ex.StackTrace });
+            }
         }
 
         [HttpPost("Teams")]
