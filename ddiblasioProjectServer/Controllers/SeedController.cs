@@ -121,7 +121,7 @@ namespace champsProjectServer.Controllers
                 // Add items here (See Corresponding stores item for reference
                 User newItem = new()
                 {
-                    Username = record.name,
+                    Username = record.username,
                     Password = record.password,
                     Name = record.name,
                     Region = record.region,
